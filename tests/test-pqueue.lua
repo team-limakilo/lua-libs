@@ -1,3 +1,4 @@
+#!/usr/bin/lua
 require "os"
 
 local PriorityQueue = require("libs.containers.pqueue")

@@ -1,12 +1,34 @@
 #!/bin/sh
 
-set -e
+export LC_ALL=C
 
-for t in test-*.lua; do
+#set -e
+cwd=$(pwd)
+base=$(dirname $0)
+srcroot="${cwd}/${base}/.."
+fail=0
+
+LUA_LIB_PATH=${LUA_LIB_PATH:-${srcroot}/../lua-libs/src/?.lua}
+LUA_PATH="${srcroot}/src/?.lua;${LUA_LIB_PATH}"
+LUA_PATH="${LUA_PATH};;"
+export LUA_PATH
+#echo "lua-path: ${LUA_PATH}"
+
+cd "${base}"
+if test $# -gt 0; then
+	tests="$@"
+else
+	tests=$(ls test-*.lua)
+fi
+
+for t in $tests; do
 	result="PASS"
-	LUA_PATH=${LUA_PATH} lua ${t}
+	./$(basename ${t})
 	if test $? -ne 0; then
 		result="FAIL"
+		fail=1
 	fi
 	echo "${result}: ${t}"
 done
+cd "${cwd}"
+exit ${fail}
