@@ -56,10 +56,10 @@ function utils.mergetables(dest, source)
 	return dest
 end
 
-function utils.readlua(file, tblname)
+function utils.readlua(file, tblname, env)
 	assert(file and type(file) == "string", "file path must be provided")
 	local f = assert(loadfile(file))
-	local config = {}
+	local config = env or {}
 	setfenv(f, config)
 	assert(pcall(f))
 	local tbl = config
@@ -75,7 +75,7 @@ function utils.readconfigs(cfgfiles, tbl)
 		if lfs.attributes(cfg.file) ~= nil then
 			utils.mergetables(tbl[cfg.name],
 				cfg.validate(cfg,
-					utils.readlua(cfg.file, cfg.cfgtblname)))
+					utils.readlua(cfg.file, cfg.cfgtblname, cfg.env)))
 		end
 	end
 end
